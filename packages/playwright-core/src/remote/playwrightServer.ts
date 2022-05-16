@@ -51,10 +51,10 @@ export class PlaywrightServer {
   }
 
   async listen(port: number = 0): Promise<string> {
-    const server = http.createServer((request, response) => {
+    const server = http.createServer((_request: any, response: any) => {
       response.end('Running');
     });
-    server.on('error', error => debugLog(error));
+    server.on('error', (error: any) => debugLog(error));
 
     const wsEndpoint = await new Promise<string>((resolve, reject) => {
       server.listen(port, () => {
@@ -72,7 +72,7 @@ export class PlaywrightServer {
 
     this._wsServer = new wsServer({ server, path: this._path });
     const originalShouldHandle = this._wsServer.shouldHandle.bind(this._wsServer);
-    this._wsServer.shouldHandle = request => originalShouldHandle(request) && this._clientsCount < this._maxClients;
+    this._wsServer.shouldHandle = (request: any) => originalShouldHandle(request) && this._clientsCount < this._maxClients;
     this._wsServer.on('connection', async (ws, request) => {
       if (this._clientsCount >= this._maxClients) {
         ws.close(1013, 'Playwright Server is busy');

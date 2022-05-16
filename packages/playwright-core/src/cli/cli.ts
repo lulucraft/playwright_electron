@@ -40,6 +40,7 @@ import type { GridFactory } from '../grid/gridServer';
 import { GridServer } from '../grid/gridServer';
 import type { Executable } from '../server';
 import { registry, writeDockerVersion } from '../server';
+import { ElectronApplication } from '@playwright-core/client/electron';
 
 const packageJSON = require('../../package.json');
 
@@ -203,6 +204,7 @@ const browsers = [
   { alias: 'cr', name: 'Chromium', type: 'chromium' },
   { alias: 'ff', name: 'Firefox', type: 'firefox' },
   { alias: 'wk', name: 'WebKit', type: 'webkit' },
+  { alias: 'elec', name: 'Electron', type: 'electron' },
 ];
 
 for (const { alias, name, type } of browsers) {
@@ -402,7 +404,13 @@ async function launchContext(options: Options, headless: boolean, executablePath
       launchOptions.proxy.bypass = options.proxyBypass;
   }
 
-  const browser = await browserType.launch(launchOptions);
+  // Edit Nepta_
+  let browser: any = null;
+  if (browserType.name() === 'electron')
+    browser = await playwright._electron.launch(launchOptions); // Viewport size
+  else
+    browser = await browserType.launch(launchOptions); // Viewport size
+  // End edit Nepta_
 
   // Viewport size
   if (options.viewportSize) {
@@ -416,7 +424,6 @@ async function launchContext(options: Options, headless: boolean, executablePath
   }
 
   // Geolocation
-
   if (options.geolocation) {
     try {
       const [latitude, longitude] = options.geolocation.split(',').map(n => parseFloat(n.trim()));
@@ -432,37 +439,38 @@ async function launchContext(options: Options, headless: boolean, executablePath
   }
 
   // User agent
-
   if (options.userAgent)
     contextOptions.userAgent = options.userAgent;
 
   // Lang
-
   if (options.lang)
     contextOptions.locale = options.lang;
 
   // Color scheme
-
   if (options.colorScheme)
     contextOptions.colorScheme = options.colorScheme as 'dark' | 'light';
 
   // Timezone
-
   if (options.timezone)
     contextOptions.timezoneId = options.timezone;
 
   // Storage
-
   if (options.loadStorage)
     contextOptions.storageState = options.loadStorage;
 
   if (options.ignoreHttpsErrors)
     contextOptions.ignoreHTTPSErrors = true;
 
+    
+  // Edit Nepta_
+  let context: any = null;
+  if (browser instanceof ElectronApplication)
+    context = await browser.context();
+  else
+    context = await browser.newContext(contextOptions);
+  // End edit Nepta_
+    
   // Close app when the last window closes.
-
-  const context = await browser.newContext(contextOptions);
-
   let closingBrowser = false;
   async function closeBrowser() {
     // We can come here multiple times. For example, saving storage creates
@@ -480,7 +488,10 @@ async function launchContext(options: Options, headless: boolean, executablePath
   context.on('page', page => {
     page.on('dialog', () => {});  // Prevent dialogs from being automatically dismissed.
     page.on('close', () => {
-      const hasPage = browser.contexts().some(context => context.pages().length > 0);
+      // Edit Nepta_
+      let hasPage = null;
+      if (!(browser instanceof ElectronApplication)) hasPage = browser.contexts().some((context: BrowserContext) => context.pages().length > 0);
+      // End edit Nepta_
       if (hasPage)
         return;
       // Avoid the error when the last page is closed because the browser has been closed.
@@ -539,7 +550,9 @@ async function codegen(options: Options, url: string | undefined, language: stri
     startRecording: true,
     outputFile: outputFile ? path.resolve(outputFile) : undefined
   });
-  await openPage(context, url);
+  // Edit Nepta_
+  if (!(context instanceof ElectronApplication)) await openPage(context, url);
+  // End edit Nepta_
   if (process.env.PWTEST_CLI_EXIT)
     await Promise.all(context.pages().map(p => p.close()));
 }
@@ -593,6 +606,7 @@ function lookupBrowserType(options: Options): BrowserType {
     case 'cr': browserType = playwright.chromium; break;
     case 'wk': browserType = playwright.webkit; break;
     case 'ff': browserType = playwright.firefox; break;
+    case 'elec': browserType = playwright._electron; break;
   }
   if (browserType)
     return browserType;
