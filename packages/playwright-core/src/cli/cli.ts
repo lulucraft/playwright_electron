@@ -379,7 +379,7 @@ async function launchContext(options: Options, headless: boolean, executablePath
   const launchOptions = {
     args: [
       '--enable-logging',
-      path.join(__dirname, '\\..\\..\\..\\..\\..\\..\\dist_electron\\win-unpacked\\resources\\app.asar\\'),
+      path.join(__dirname, '\\..\\..\\..\\..\\dist_electron\\win-unpacked\\resources\\app.asar\\'),
     ]
   };
   // if (options.channel)
