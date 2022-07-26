@@ -5,8 +5,7 @@
     "test": "playwright test",
     "ctest": "playwright test --project=chromium",
     "ftest": "playwright test --project=firefox",
-    "wtest": "playwright test --project=webkit",
-    "electest": "playwright test --project=electron"
+    "wtest": "playwright test --project=webkit"
   },
   "keywords": [],
   "author": "",

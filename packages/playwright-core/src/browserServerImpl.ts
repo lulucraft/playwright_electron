@@ -28,9 +28,9 @@ import { helper } from './server/helper';
 import { rewriteErrorMessage } from './utils/stackTrace';
 
 export class BrowserServerLauncherImpl implements BrowserServerLauncher {
-  private _browserName: 'chromium' | 'firefox' | 'webkit' | 'electron';
+  private _browserName: 'chromium' | 'firefox' | 'webkit';
 
-  constructor(browserName: 'chromium' | 'firefox' | 'webkit' | 'electron') {
+  constructor(browserName: 'chromium' | 'firefox' | 'webkit') {
     this._browserName = browserName;
   }
 

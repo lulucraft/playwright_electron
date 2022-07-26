@@ -478,7 +478,6 @@ Playwright:
     chromium: BrowserType
     firefox: BrowserType
     webkit: BrowserType
-    electron1: BrowserType
     android: Android
     electron: Electron
     utils: LocalUtils

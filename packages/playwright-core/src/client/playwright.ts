@@ -32,7 +32,7 @@ type DeviceDescriptor = {
   deviceScaleFactor: number,
   isMobile: boolean,
   hasTouch: boolean,
-  defaultBrowserType: 'chromium' | 'firefox' | 'webkit' | 'electron'
+  defaultBrowserType: 'chromium' | 'firefox' | 'webkit'
 };
 type Devices = { [name: string]: DeviceDescriptor };
 
@@ -42,7 +42,6 @@ export class Playwright extends ChannelOwner<channels.PlaywrightChannel> {
   readonly chromium: BrowserType;
   readonly firefox: BrowserType;
   readonly webkit: BrowserType;
-  readonly electron: BrowserType;
   readonly devices: Devices;
   selectors: Selectors;
   readonly request: APIRequest;
@@ -57,10 +56,6 @@ export class Playwright extends ChannelOwner<channels.PlaywrightChannel> {
     this.chromium._playwright = this;
     this.firefox = BrowserType.from(initializer.firefox);
     this.firefox._playwright = this;
-    // Edit Nepta_
-    this.electron = BrowserType.from(initializer.electron1);
-    this.electron._playwright = this;
-    // End edit Nepta_
     this.webkit = BrowserType.from(initializer.webkit);
     this.webkit._playwright = this;
     this._android = Android.from(initializer.android);

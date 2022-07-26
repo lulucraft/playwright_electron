@@ -71,13 +71,6 @@ const config: PlaywrightTestConfig = {
       },
     },
 
-    {
-      name: 'electron',
-      use: {
-        ...devices['Desktop Electron'],
-      },
-    },
-
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
